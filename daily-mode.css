@@ -1,0 +1,65 @@
+.daily-card-v2 {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 15px;
+  border: 1px solid #aebcec;
+  border-radius: 18px;
+  background: #f7f8ff;
+}
+
+.daily-card-main {
+  min-width: 0;
+}
+
+.daily-card-v2 strong {
+  display: block;
+  color: var(--navy);
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+.daily-card-v2 p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.daily-card-v2 > .primary-button {
+  min-width: 104px;
+  min-height: 44px;
+  padding: 10px 13px;
+}
+
+.daily-rule-list {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 1px;
+}
+
+.daily-rule-list span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 27px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #edf0f8;
+  color: #4d5c75;
+  font-size: 10px;
+  font-weight: 720;
+  line-height: 1.25;
+}
+
+@media (max-width: 370px) {
+  .daily-card-v2 {
+    grid-template-columns: 1fr;
+  }
+
+  .daily-card-v2 > .primary-button {
+    width: 100%;
+  }
+}
