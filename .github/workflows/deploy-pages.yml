@@ -3,6 +3,8 @@ name: 빅데이터분석기사 학습 앱 배포
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -11,8 +13,8 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -45,19 +47,23 @@ jobs:
         run: node validate-data.mjs
 
       - name: GitHub Pages 구성 확인
+        if: github.event_name != 'pull_request'
         uses: actions/configure-pages@v5
 
       - name: 배포 파일 구성
+        if: github.event_name != 'pull_request'
         run: |
           mkdir -p _site
           rsync -a --exclude '.git' --exclude '.github' --exclude '_site' --exclude 'README.md' --exclude 'validate-data.mjs' ./ _site/
 
       - name: 정적 앱 업로드
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v4
         with:
           path: ./_site
 
   deploy:
+    if: github.event_name != 'pull_request'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
