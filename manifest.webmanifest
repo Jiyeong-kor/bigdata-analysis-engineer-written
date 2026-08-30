@@ -1,0 +1,21 @@
+{
+  "name": "빅데이터분석기사 필기 공부",
+  "short_name": "빅분기 공부",
+  "description": "기출문제를 한 문항씩 풀고, 필요한 순간 개념으로 전환하는 개인 학습 앱",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f6fb",
+  "theme_color": "#14213d",
+  "orientation": "portrait-primary",
+  "lang": "ko-KR",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
