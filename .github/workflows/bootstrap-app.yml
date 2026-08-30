@@ -1,0 +1,117 @@
+name: 빅데이터분석기사 학습 앱 이전
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/bootstrap-app.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 새 저장소 가져오기
+        uses: actions/checkout@v4
+
+      - name: 기존에 만든 학습 앱 재사용
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --quiet https://github.com/Jiyeong-kor/web2app-pwa.git /tmp/web2app-pwa
+          git -C /tmp/web2app-pwa checkout --quiet 9a15d868c1ee41ce585eb1773cdee2f400eb0564
+
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -a /tmp/web2app-pwa/bigdata-study/. .
+
+          mkdir -p .github/workflows
+          cat > .github/workflows/deploy-pages.yml <<'YAML'
+          name: 빅데이터분석기사 학습 앱 배포
+
+          on:
+            push:
+              branches: [main]
+            workflow_dispatch:
+
+          permissions:
+            contents: read
+            pages: write
+            id-token: write
+
+          concurrency:
+            group: pages
+            cancel-in-progress: false
+
+          jobs:
+            build:
+              runs-on: ubuntu-latest
+              steps:
+                - name: 저장소 가져오기
+                  uses: actions/checkout@v4
+
+                - name: GitHub Pages 구성 확인
+                  uses: actions/configure-pages@v5
+
+                - name: 배포 파일 구성
+                  run: |
+                    mkdir -p _site
+                    rsync -a --exclude '.git' --exclude '.github' --exclude '_site' --exclude 'README.md' ./ _site/
+
+                - name: 정적 앱 업로드
+                  uses: actions/upload-pages-artifact@v4
+                  with:
+                    path: ./_site
+
+            deploy:
+              environment:
+                name: github-pages
+                url: ${{ steps.deployment.outputs.page_url }}
+              runs-on: ubuntu-latest
+              needs: build
+              steps:
+                - name: GitHub Pages 배포
+                  id: deployment
+                  uses: actions/deploy-pages@v4
+          YAML
+
+          cat > README.md <<'MARKDOWN'
+          # 빅데이터분석기사 필기 학습 앱
+
+          아이폰 13 mini를 포함한 모바일 환경에서 빅데이터분석기사 필기 기출문제를 한 문항씩 풀고, 필요한 순간 개념 학습으로 전환할 수 있는 개인 학습용 PWA입니다.
+
+          ## 재사용한 검증 자산
+
+          - Notion의 최신 `빅데이터분석기사 기출문제 12회 (2026.04.04)` 80문항과 정답·핵심 해설
+          - Notion에 보강된 33번 선택지와 21번·63번 학습용 상자그림
+          - 기존 ADsP·빅데이터 학습 자료에서 효과가 확인된 한 문항씩 풀기 방식
+          - `모르겠음`, 첫 답안, 정오, 자신감, 해설 확인, 오답 이유, 풀이 시간 저장 구조
+          - 브라우저 저장소 기반 중단·이어풀기, JSON 백업·복원, 오프라인 실행
+
+          ## 주요 기능
+
+          - 전체 80문항, 과목별 20문항, 미풀이 문항, 오답·모르겠음 재시험
+          - 해설 확인 전 다음 문항 이동 방지
+          - 최근 5문항 중 3문항 이상 오답·모르겠음 또는 같은 개념 2회 이상 취약 시 개념 복습 권고
+          - 정의 → 판단 기준 → 혼동 개념 → 예시 → 미니 확인 순서의 개념 학습
+          - iPhone Safe Area와 작은 화면 대응
+
+          ## 배포
+
+          GitHub Pages를 사용합니다. 저장소의 `Settings → Pages → Build and deployment → Source`에서 `GitHub Actions`를 선택하면 별도 서비스 계정 없이 무료로 배포됩니다.
+          MARKDOWN
+
+          touch .nojekyll
+          rm -f .github/workflows/bootstrap-app.yml
+
+      - name: 이전 결과 커밋
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Jiyeong-kor"
+          git config user.email "186702776+Jiyeong-kor@users.noreply.github.com"
+          git add -A
+          git commit -m "feat: 빅데이터분석기사 필기 학습 앱 이전"
+          git push origin main
