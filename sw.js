@@ -1,9 +1,10 @@
-const CACHE_NAME = 'bigdata-study-v3';
+const CACHE_NAME = 'bigdata-study-v4';
 const APP_SHELL = [
   './',
   './index.html',
   './styles.css',
   './ui-v2.css',
+  './daily-mode.css',
   './data-subject-1.js',
   './data-subject-2.js',
   './data-subject-3.js',
@@ -13,11 +14,13 @@ const APP_SHELL = [
   './data-bank-subject-3.js',
   './data-bank-subject-4.js',
   './data-finalize.js',
+  './daily-selection.js',
   './app-core.js',
   './app-home.js',
   './source-sync-patches.js',
   './app-study.js',
   './app-v2.js',
+  './daily-mode.js',
   './app-v2-events.js',
   './app-events.js',
   './manifest.webmanifest',
