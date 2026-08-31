@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bigdata-study-v7';
+const CACHE_NAME = 'bigdata-study-v8';
 const APP_SHELL = [
   './',
   './index.html',
@@ -23,6 +23,7 @@ const APP_SHELL = [
   './app-v2.js',
   './answer-selection-fix.js',
   './instant-choice-grading-ui.js',
+  './app-update.js',
   './daily-mode.js',
   './app-v2-events.js',
   './app-events.js',
@@ -43,6 +44,10 @@ self.addEventListener('activate', (event) => {
     )
   );
   self.clients.claim();
+});
+
+self.addEventListener('message', (event) => {
+  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('fetch', (event) => {
