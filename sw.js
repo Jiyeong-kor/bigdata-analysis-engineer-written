@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bigdata-study-v4';
+const CACHE_NAME = 'bigdata-study-v5';
 const APP_SHELL = [
   './',
   './index.html',
@@ -20,6 +20,7 @@ const APP_SHELL = [
   './source-sync-patches.js',
   './app-study.js',
   './app-v2.js',
+  './answer-selection-fix.js',
   './daily-mode.js',
   './app-v2-events.js',
   './app-events.js',
