@@ -91,4 +91,16 @@ const weakInfo = daily.describeDailySet({
 assert(weakInfo.subjects.every((count) => count === 2), '오답 반영 후 과목별 2문항 구성이 깨졌습니다.');
 assert(weakInfo.weak >= 1, '오답·취약 문항 우선 원칙이 설명 정보에 반영되지 않았습니다.');
 
-console.log('검증 완료: 오늘의 8문제는 과목별 2문항, 오답 반영, 미풀이 우선, 빅분기 추가영역 가중치를 충족합니다.');
+const dailyModeSource = fs.readFileSync('daily-mode.js', 'utf8');
+for (const forbiddenCopy of [
+  '매일학습 채팅',
+  '출제 기준을 앱에 적용',
+  '8문제 만들기',
+  '빅분기 추가영역 우선',
+  '맞힌 개념 반복 최소화',
+  '정답 제출 후 해설 공개',
+]) {
+  assert(!dailyModeSource.includes(forbiddenCopy), `사용자 화면에 내부 구현 문구가 남아 있습니다: ${forbiddenCopy}`);
+}
+
+console.log('검증 완료: 오늘의 8문제 선정 기준과 사용자 중심 화면 문구가 정상입니다.');

@@ -75,23 +75,17 @@
       <div class="section-head">
         <div>
           <h2>오늘의 8문제</h2>
-          <p class="section-caption">매일학습 채팅의 출제 기준을 앱에 적용합니다.</p>
+          <p class="section-caption">네 과목을 고르게 풀면서 취약한 부분부터 확인합니다.</p>
         </div>
       </div>
       <div class="daily-card-v2">
         <div class="daily-card-main">
-          <strong>네 과목에서 2문항씩</strong>
+          <strong>과목별 2문제</strong>
           <p>${info
-            ? `오늘 세트: 오답·불확실 ${info.weak}문항 · 미풀이 ${info.unseen}문항 · 빅분기 추가영역 ${info.bigdataSpecific}문항`
-            : '오답·모르겠음·불확실한 정답을 먼저 보강하고, 자신 있게 맞힌 개념의 반복은 뒤로 미룹니다.'}</p>
+            ? `처음 푸는 문제 ${info.unseen}개 · 다시 볼 문제 ${info.weak}개`
+            : '오늘 풀 문제를 바로 시작합니다.'}</p>
         </div>
-        <button class="primary-button" data-action="start-daily">${info ? '오늘 세트 풀기' : '8문제 만들기'}</button>
-        <div class="daily-rule-list">
-          <span>오답을 다음 세트에 반영</span>
-          <span>맞힌 개념 반복 최소화</span>
-          <span>빅분기 추가영역 우선</span>
-          <span>정답 제출 후 해설 공개</span>
-        </div>
+        <button class="primary-button" data-action="start-daily">풀기</button>
       </div>`;
 
     page.insertBefore(section, mixedSection);
