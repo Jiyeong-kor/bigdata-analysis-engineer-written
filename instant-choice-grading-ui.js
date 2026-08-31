@@ -3,6 +3,7 @@
   const originalStartSession = startSession;
   const originalResumeSession = resumeSession;
   const originalNextQuestion = nextQuestion;
+  const originalAnswerCurrent = answerCurrent;
 
   function positionQuestionAtReadingStart() {
     requestAnimationFrame(() => {
@@ -17,6 +18,33 @@
 
         window.scrollTo({
           top: Math.max(0, Math.round(targetTop)),
+          behavior: 'auto'
+        });
+      });
+    });
+  }
+
+  function positionNextActionForTap() {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const nextButton = app.querySelector('[data-action="next-question"]');
+        if (!nextButton) return;
+
+        const topbar = app.querySelector('.topbar');
+        const stickyActions = app.querySelector('.sticky-actions');
+        const viewportTop = (topbar?.getBoundingClientRect().bottom || 0) + 10;
+        const stickyTop = stickyActions?.getBoundingClientRect().top || window.innerHeight;
+        const viewportBottom = Math.min(window.innerHeight, stickyTop) - 10;
+        const buttonRect = nextButton.getBoundingClientRect();
+
+        if (buttonRect.top >= viewportTop && buttonRect.bottom <= viewportBottom) return;
+
+        const delta = buttonRect.bottom > viewportBottom
+          ? buttonRect.bottom - viewportBottom
+          : buttonRect.top - viewportTop;
+
+        window.scrollBy({
+          top: Math.round(delta),
           behavior: 'auto'
         });
       });
@@ -48,6 +76,18 @@
     if (unknownButton) unknownButton.classList.add('full-button');
   };
 
+  answerCurrent = function answerCurrentAndRevealNextAction(...args) {
+    const question = currentQuestion();
+    const hadAttempt = Boolean(currentAttempt());
+
+    originalAnswerCurrent(...args);
+
+    const hasNewAttempt = !hadAttempt && Boolean(currentAttempt());
+    if (question?.type !== 'short' && hasNewAttempt && view.name === 'quiz') {
+      positionNextActionForTap();
+    }
+  };
+
   startSession = function startSessionAndPositionQuestion(...args) {
     originalStartSession(...args);
     if (state.activeSession && view.name === 'quiz') positionQuestionAtReadingStart();
@@ -74,6 +114,7 @@
 
   window.INSTANT_CHOICE_GRADING = Object.freeze({
     enabled: true,
-    positionQuestionAtReadingStart
+    positionQuestionAtReadingStart,
+    positionNextActionForTap
   });
 })();
