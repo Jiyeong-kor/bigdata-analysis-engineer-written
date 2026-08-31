@@ -6,6 +6,7 @@ const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 const index = read('./index.html');
 const events = read('./app-events.js');
 const instantUi = read('./instant-choice-grading-ui.js');
+const appUpdate = read('./app-update.js');
 const layout = read('./iphone-quiz-layout.css');
 const serviceWorker = read('./sw.js');
 
@@ -19,6 +20,13 @@ assert.ok(
   instantUi.includes("question.type === 'short'") &&
     instantUi.includes('checkButton.remove()'),
   '객관식에서 정답 확인 버튼을 제거하는 처리가 없습니다.'
+);
+
+assert.ok(
+  instantUi.includes('originalAnswerCurrent') &&
+    instantUi.includes('positionNextActionForTap') &&
+    instantUi.includes('[data-action="next-question"]'),
+  '채점 후 다음 문제 버튼으로 이동하는 처리가 없습니다.'
 );
 
 assert.ok(
@@ -37,16 +45,29 @@ assert.ok(
 );
 
 assert.ok(
-  index.includes('./iphone-quiz-layout.css') &&
-    index.indexOf('./app-v2.js') < index.indexOf('./instant-choice-grading-ui.js'),
-  '화면 보정 파일의 로딩 순서가 올바르지 않습니다.'
+  appUpdate.includes('data-action="app-update"') &&
+    appUpdate.includes('registration.update()') &&
+    appUpdate.includes("window.location.reload()") &&
+    appUpdate.includes("SKIP_WAITING"),
+  '앱 내부 업데이트 확인과 자동 새로고침 처리가 없습니다.'
 );
 
 assert.ok(
-  serviceWorker.includes("bigdata-study-v7") &&
-    serviceWorker.includes('./iphone-quiz-layout.css') &&
-    serviceWorker.includes('./instant-choice-grading-ui.js'),
-  'PWA 캐시에 최신 화면 보정 파일이 포함되지 않았습니다.'
+  index.includes('./iphone-quiz-layout.css') &&
+    index.includes('./app-update.js') &&
+    index.indexOf('./app-v2.js') < index.indexOf('./instant-choice-grading-ui.js') &&
+    index.indexOf('./instant-choice-grading-ui.js') < index.indexOf('./app-update.js') &&
+    index.indexOf('./app-update.js') < index.indexOf('./app-events.js'),
+  '화면 보정 또는 업데이트 파일의 로딩 순서가 올바르지 않습니다.'
 );
 
-console.log('객관식 즉시 채점, iPhone safe area, 새 문항 위치 검사를 통과했습니다.');
+assert.ok(
+  serviceWorker.includes("bigdata-study-v8") &&
+    serviceWorker.includes('./iphone-quiz-layout.css') &&
+    serviceWorker.includes('./instant-choice-grading-ui.js') &&
+    serviceWorker.includes('./app-update.js') &&
+    serviceWorker.includes("event.data?.type === 'SKIP_WAITING'"),
+  'PWA 캐시에 최신 화면·업데이트 파일이 포함되지 않았습니다.'
+);
+
+console.log('즉시 채점, 다음 버튼 이동, iPhone 화면 배치, 앱 내부 업데이트 검사를 통과했습니다.');
