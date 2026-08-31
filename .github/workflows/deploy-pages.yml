@@ -33,6 +33,7 @@ jobs:
           node --check app-v2-events.js
           node --check answer-selection-fix.js
           node --check instant-choice-grading-ui.js
+          node --check concept-link-fix.js
           node --check app-update.js
           node --check daily-mode.js
           node --check daily-selection.js
