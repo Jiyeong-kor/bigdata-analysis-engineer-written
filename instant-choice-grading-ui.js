@@ -1,5 +1,27 @@
 (() => {
   const originalRenderQuiz = renderQuiz;
+  const originalStartSession = startSession;
+  const originalResumeSession = resumeSession;
+  const originalNextQuestion = nextQuestion;
+
+  function positionQuestionAtReadingStart() {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const questionCard = app.querySelector('.question-card');
+        if (!questionCard) return;
+
+        const topbar = app.querySelector('.topbar');
+        const topbarBottom = topbar?.getBoundingClientRect().bottom || 0;
+        const cardTop = questionCard.getBoundingClientRect().top;
+        const targetTop = window.scrollY + cardTop - topbarBottom - 8;
+
+        window.scrollTo({
+          top: Math.max(0, Math.round(targetTop)),
+          behavior: 'auto'
+        });
+      });
+    });
+  }
 
   renderQuiz = function renderQuizWithInstantChoiceGrading() {
     originalRenderQuiz();
@@ -21,10 +43,37 @@
     const checkButton = actions?.querySelector('[data-action="check-answer"]');
     if (checkButton) checkButton.remove();
 
-    if (actions) actions.style.gridTemplateColumns = '1fr';
+    if (actions) actions.classList.add('quiz-actions-single');
     const unknownButton = actions?.querySelector('[data-action="unknown"]');
     if (unknownButton) unknownButton.classList.add('full-button');
   };
 
-  window.INSTANT_CHOICE_GRADING = Object.freeze({ enabled: true });
+  startSession = function startSessionAndPositionQuestion(...args) {
+    originalStartSession(...args);
+    if (state.activeSession && view.name === 'quiz') positionQuestionAtReadingStart();
+  };
+
+  resumeSession = function resumeSessionAndPositionQuestion(...args) {
+    originalResumeSession(...args);
+    if (state.activeSession && view.name === 'quiz') positionQuestionAtReadingStart();
+  };
+
+  nextQuestion = function nextQuestionAndPositionQuestion(...args) {
+    const previousSessionId = state.activeSession?.id;
+    const previousIndex = state.activeSession?.index;
+
+    originalNextQuestion(...args);
+
+    const session = state.activeSession;
+    const movedToNewQuestion = session && (
+      session.id !== previousSessionId || session.index !== previousIndex
+    );
+
+    if (movedToNewQuestion && view.name === 'quiz') positionQuestionAtReadingStart();
+  };
+
+  window.INSTANT_CHOICE_GRADING = Object.freeze({
+    enabled: true,
+    positionQuestionAtReadingStart
+  });
 })();
