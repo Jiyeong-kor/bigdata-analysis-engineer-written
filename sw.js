@@ -1,10 +1,11 @@
-const CACHE_NAME = 'bigdata-study-v6';
+const CACHE_NAME = 'bigdata-study-v7';
 const APP_SHELL = [
   './',
   './index.html',
   './styles.css',
   './ui-v2.css',
   './daily-mode.css',
+  './iphone-quiz-layout.css',
   './data-subject-1.js',
   './data-subject-2.js',
   './data-subject-3.js',

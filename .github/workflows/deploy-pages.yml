@@ -31,6 +31,8 @@ jobs:
           node --check app-study.js
           node --check app-v2.js
           node --check app-v2-events.js
+          node --check answer-selection-fix.js
+          node --check instant-choice-grading-ui.js
           node --check daily-mode.js
           node --check daily-selection.js
           node --check data-finalize.js
@@ -51,6 +53,9 @@ jobs:
       - name: 매일 8문제 선정 기준 검사
         run: node validate-daily.mjs
 
+      - name: 문제 화면 UX 검사
+        run: node validate-quiz-ux.mjs
+
       - name: GitHub Pages 구성 확인
         if: github.event_name != 'pull_request'
         uses: actions/configure-pages@v5
@@ -59,7 +64,7 @@ jobs:
         if: github.event_name != 'pull_request'
         run: |
           mkdir -p _site
-          rsync -a --exclude '.git' --exclude '.github' --exclude '_site' --exclude 'README.md' --exclude 'validate-data.mjs' --exclude 'validate-daily.mjs' ./ _site/
+          rsync -a --exclude '.git' --exclude '.github' --exclude '_site' --exclude 'README.md' --exclude 'validate-data.mjs' --exclude 'validate-daily.mjs' --exclude 'validate-quiz-ux.mjs' ./ _site/
 
       - name: 정적 앱 업로드
         if: github.event_name != 'pull_request'

@@ -1,0 +1,32 @@
+/* iPhone standalone PWA에서 safe area가 두 번 적용되던 문제를 보정합니다. */
+#app {
+  padding-top: 0;
+}
+
+/* 상단바가 없는 홈·결과 화면은 상태 표시줄 아래에서 시작합니다. */
+.app-shell > .page {
+  padding-top: calc(18px + env(safe-area-inset-top));
+}
+
+.app-shell > .page.page-v2 {
+  padding-top: calc(12px + env(safe-area-inset-top));
+}
+
+/* 상단바가 있는 문제·개념 화면은 상단바가 safe area를 담당합니다. */
+.app-shell > .topbar + .page {
+  padding-top: 18px;
+}
+
+.app-shell > .topbar + .page.page-v2 {
+  padding-top: 12px;
+}
+
+/* 새 문항으로 이동할 때 문제 카드가 고정 상단바 바로 아래에 놓이도록 합니다. */
+.question-card {
+  scroll-margin-top: calc(64px + env(safe-area-inset-top));
+}
+
+/* 객관식에서는 정답 확인 버튼을 제거하고 ‘모르겠음’ 버튼을 한 줄로 사용합니다. */
+.quiz-actions.quiz-actions-single {
+  grid-template-columns: 1fr;
+}
