@@ -6,9 +6,11 @@ const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 const index = read('./index.html');
 const events = read('./app-events.js');
 const instantUi = read('./instant-choice-grading-ui.js');
+const conceptLinkFix = read('./concept-link-fix.js');
 const appUpdate = read('./app-update.js');
 const layout = read('./iphone-quiz-layout.css');
 const serviceWorker = read('./sw.js');
+const subject4Bank = read('./data-bank-subject-4.js');
 
 assert.ok(
   events.includes('state.activeSession.draft.answer = Number(button.dataset.answer);') &&
@@ -38,6 +40,19 @@ assert.ok(
 );
 
 assert.ok(
+  conceptLinkFix.includes('currentButton.dataset.concept = question.conceptId') &&
+    conceptLinkFix.includes('현재 문제 개념 보기') &&
+    conceptLinkFix.includes('recommendation.conceptId === question.conceptId'),
+  '현재 문항의 개념과 개념 보기 버튼을 고정하는 처리가 없습니다.'
+);
+
+assert.ok(
+  subject4Bank.includes("diagnostic(131, 31, 'TP=36, FP=12, FN=24, TN=28일 때 정밀도는?'") &&
+    subject4Bank.includes("2, 'metrics', '정밀도는 TP/(TP+FP)=36/(36+12)=0.75입니다.'"),
+  '자가진단 31번 정밀도 문항의 개념 데이터가 metrics로 연결되어 있지 않습니다.'
+);
+
+assert.ok(
   layout.includes('#app') &&
     layout.includes('padding-top: 0') &&
     layout.includes('.app-shell > .topbar + .page'),
@@ -54,20 +69,23 @@ assert.ok(
 
 assert.ok(
   index.includes('./iphone-quiz-layout.css') &&
+    index.includes('./concept-link-fix.js') &&
     index.includes('./app-update.js') &&
     index.indexOf('./app-v2.js') < index.indexOf('./instant-choice-grading-ui.js') &&
-    index.indexOf('./instant-choice-grading-ui.js') < index.indexOf('./app-update.js') &&
+    index.indexOf('./instant-choice-grading-ui.js') < index.indexOf('./concept-link-fix.js') &&
+    index.indexOf('./concept-link-fix.js') < index.indexOf('./app-update.js') &&
     index.indexOf('./app-update.js') < index.indexOf('./app-events.js'),
-  '화면 보정 또는 업데이트 파일의 로딩 순서가 올바르지 않습니다.'
+  '화면 보정, 개념 연결 또는 업데이트 파일의 로딩 순서가 올바르지 않습니다.'
 );
 
 assert.ok(
-  serviceWorker.includes("bigdata-study-v8") &&
+  serviceWorker.includes("bigdata-study-v9") &&
     serviceWorker.includes('./iphone-quiz-layout.css') &&
     serviceWorker.includes('./instant-choice-grading-ui.js') &&
+    serviceWorker.includes('./concept-link-fix.js') &&
     serviceWorker.includes('./app-update.js') &&
     serviceWorker.includes("event.data?.type === 'SKIP_WAITING'"),
-  'PWA 캐시에 최신 화면·업데이트 파일이 포함되지 않았습니다.'
+  'PWA 캐시에 최신 화면·개념 연결·업데이트 파일이 포함되지 않았습니다.'
 );
 
-console.log('즉시 채점, 다음 버튼 이동, iPhone 화면 배치, 앱 내부 업데이트 검사를 통과했습니다.');
+console.log('즉시 채점, 다음 버튼 이동, 현재 문항 개념 연결, iPhone 화면 배치, 앱 내부 업데이트 검사를 통과했습니다.');
