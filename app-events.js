@@ -24,8 +24,7 @@ app.addEventListener('click', (event) => {
     if (!state.activeSession || currentAttempt()) return;
     state.activeSession.draft ||= { answer: null, confidence: null };
     state.activeSession.draft.answer = Number(button.dataset.answer);
-    saveState();
-    render();
+    answerCurrent(false);
   } else if (action === 'confidence') {
     if (!state.activeSession || currentAttempt()) return;
     state.activeSession.draft ||= { answer: null, confidence: null };
