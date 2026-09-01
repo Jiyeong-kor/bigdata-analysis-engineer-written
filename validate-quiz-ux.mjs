@@ -69,7 +69,8 @@ assert.ok(
 );
 
 assert.ok(
-  appUpdate.includes('data-action="app-update"') &&
+  appUpdate.includes("const APP_VERSION = 'v11';") &&
+    appUpdate.includes('data-action="app-update"') &&
     appUpdate.includes('registration.update()') &&
     appUpdate.includes("window.location.reload()") &&
     appUpdate.includes("SKIP_WAITING"),
@@ -89,7 +90,7 @@ assert.ok(
 );
 
 assert.ok(
-  serviceWorker.includes("bigdata-study-v10") &&
+  serviceWorker.includes("bigdata-study-v11") &&
     serviceWorker.includes('./iphone-quiz-layout.css') &&
     serviceWorker.includes('./hypothesis-pvalue-patch.js') &&
     serviceWorker.includes('./instant-choice-grading-ui.js') &&
