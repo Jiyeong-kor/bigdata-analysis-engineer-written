@@ -18,7 +18,6 @@
     if (!attempt) return 0;
     if (attempt.status === 'unknown') return 4;
     if (attempt.status === 'wrong') return 3;
-    if (attempt.status === 'correct' && attempt.confidence === 'uncertain') return 1;
     return 0;
   }
 
@@ -51,7 +50,7 @@
         seen: 0,
         weak: 0,
         weakSeverity: 0,
-        confidentCorrect: 0,
+        correct: 0,
       };
       const severity = weaknessScore(attempt);
       item.seen += 1;
@@ -59,7 +58,7 @@
         item.weak += 1;
         item.weakSeverity += severity;
       } else {
-        item.confidentCorrect += 1;
+        item.correct += 1;
       }
       stats.set(question.conceptId, item);
     }
@@ -80,9 +79,9 @@
       seen: 0,
       weak: 0,
       weakSeverity: 0,
-      confidentCorrect: 0,
+      correct: 0,
     };
-    const mastered = concept.seen > 0 && concept.weak === 0 && concept.confidentCorrect > 0;
+    const mastered = concept.seen > 0 && concept.weak === 0 && concept.correct > 0;
 
     let score = 0;
 
