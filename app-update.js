@@ -1,5 +1,5 @@
 (() => {
-  const APP_VERSION = 'v8';
+  const APP_VERSION = 'v11';
   const UPDATE_NOTICE_KEY = 'bigdata-study-update-applied';
   let checking = false;
 
