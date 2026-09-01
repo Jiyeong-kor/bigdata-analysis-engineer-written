@@ -6,6 +6,7 @@ const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 const index = read('./index.html');
 const events = read('./app-events.js');
 const instantUi = read('./instant-choice-grading-ui.js');
+const simplification = read('./quiz-simplification.js');
 const conceptLinkFix = read('./concept-link-fix.js');
 const pValuePatch = read('./hypothesis-pvalue-patch.js');
 const appUpdate = read('./app-update.js');
@@ -41,6 +42,17 @@ assert.ok(
 );
 
 assert.ok(
+  simplification.includes("removes: ['elapsed-time', 'confidence', 'reason-note']") &&
+    simplification.includes("app.querySelector('.confidence')?.remove()") &&
+    simplification.includes("app.querySelector('.reason-box')?.remove()") &&
+    simplification.includes("caption.textContent.includes('사용한 시간')") &&
+    !simplification.includes('elapsedSec,') &&
+    !simplification.includes('confidence:') &&
+    !simplification.includes("note: ''"),
+  '풀이시간, 확신도 또는 틀린 이유 메모 제거가 완전하지 않습니다.'
+);
+
+assert.ok(
   conceptLinkFix.includes('currentButton.dataset.concept = question.conceptId') &&
     conceptLinkFix.includes('현재 문제 개념 보기') &&
     conceptLinkFix.includes('recommendation.conceptId === question.conceptId'),
@@ -69,7 +81,7 @@ assert.ok(
 );
 
 assert.ok(
-  appUpdate.includes("const APP_VERSION = 'v11';") &&
+  appUpdate.includes("const APP_VERSION = 'v12';") &&
     appUpdate.includes('data-action="app-update"') &&
     appUpdate.includes('registration.update()') &&
     appUpdate.includes("window.location.reload()") &&
@@ -80,24 +92,27 @@ assert.ok(
 assert.ok(
   index.includes('./iphone-quiz-layout.css') &&
     index.includes('./hypothesis-pvalue-patch.js') &&
+    index.includes('./quiz-simplification.js') &&
     index.includes('./concept-link-fix.js') &&
     index.includes('./app-update.js') &&
-    index.indexOf('./app-v2.js') < index.indexOf('./instant-choice-grading-ui.js') &&
+    index.indexOf('./app-v2.js') < index.indexOf('./quiz-simplification.js') &&
+    index.indexOf('./quiz-simplification.js') < index.indexOf('./instant-choice-grading-ui.js') &&
     index.indexOf('./instant-choice-grading-ui.js') < index.indexOf('./concept-link-fix.js') &&
     index.indexOf('./concept-link-fix.js') < index.indexOf('./app-update.js') &&
     index.indexOf('./app-update.js') < index.indexOf('./app-events.js'),
-  '화면 보정, p값 개념, 개념 연결 또는 업데이트 파일의 로딩 순서가 올바르지 않습니다.'
+  '문제풀이 단순화, 화면 보정, 개념 연결 또는 업데이트 파일의 로딩 순서가 올바르지 않습니다.'
 );
 
 assert.ok(
-  serviceWorker.includes("bigdata-study-v11") &&
+  serviceWorker.includes("bigdata-study-v12") &&
     serviceWorker.includes('./iphone-quiz-layout.css') &&
     serviceWorker.includes('./hypothesis-pvalue-patch.js') &&
+    serviceWorker.includes('./quiz-simplification.js') &&
     serviceWorker.includes('./instant-choice-grading-ui.js') &&
     serviceWorker.includes('./concept-link-fix.js') &&
     serviceWorker.includes('./app-update.js') &&
     serviceWorker.includes("event.data?.type === 'SKIP_WAITING'"),
-  'PWA 캐시에 최신 화면·p값 개념·개념 연결·업데이트 파일이 포함되지 않았습니다.'
+  'PWA 캐시에 최신 문제풀이 단순화·화면·개념·업데이트 파일이 포함되지 않았습니다.'
 );
 
-console.log('즉시 채점, 다음 버튼 이동, p값 개념, 현재 문항 개념 연결, iPhone 화면 배치, 앱 내부 업데이트 검사를 통과했습니다.');
+console.log('즉시 채점, 다음 버튼 이동, 불필요한 풀이 메타 제거, p값 개념, 현재 문항 개념 연결, iPhone 화면 배치, 앱 내부 업데이트 검사를 통과했습니다.');
