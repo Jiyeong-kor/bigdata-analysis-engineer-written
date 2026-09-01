@@ -44,18 +44,16 @@ const assert = (condition, message) => {
 };
 
 assert(
-  daily.weaknessScore({ status: 'unknown', confidence: 'unknown' }) >
-    daily.weaknessScore({ status: 'wrong', confidence: 'unmarked' }),
+  daily.weaknessScore({ status: 'unknown' }) > daily.weaknessScore({ status: 'wrong' }),
   '모르겠음이 오답보다 높은 재학습 우선순위를 가져야 합니다.'
 );
 assert(
-  daily.weaknessScore({ status: 'wrong', confidence: 'unmarked' }) >
-    daily.weaknessScore({ status: 'correct', confidence: 'uncertain' }),
-  '오답이 확신 없는 정답보다 높은 재학습 우선순위를 가져야 합니다.'
+  daily.weaknessScore({ status: 'wrong' }) > daily.weaknessScore({ status: 'correct' }),
+  '오답이 정답보다 높은 재학습 우선순위를 가져야 합니다.'
 );
 assert(
-  daily.weaknessScore({ status: 'correct', confidence: 'unmarked' }) === 0,
-  '확신 문제가 없는 정답은 취약 응답으로 계산하면 안 됩니다.'
+  daily.weaknessScore({ status: 'correct' }) === 0,
+  '정답은 취약 응답으로 계산하면 안 됩니다.'
 );
 
 const seed = '2026-08-31';
@@ -88,7 +86,6 @@ const weakAttempts = [{
   questionId: weakQuestion.id,
   conceptId: weakQuestion.conceptId,
   status: 'wrong',
-  confidence: 'uncertain',
   answeredAt: '2026-08-30T12:00:00.000Z',
 }];
 const weakSet = daily.selectDailyQuestionIds({
@@ -118,4 +115,4 @@ for (const forbiddenCopy of [
   assert(!dailyModeSource.includes(forbiddenCopy), `사용자 화면에 내부 구현 문구가 남아 있습니다: ${forbiddenCopy}`);
 }
 
-console.log('검증 완료: 오늘의 8문제 선정 기준과 사용자 중심 화면 문구가 정상입니다.');
+console.log('검증 완료: 확신도 없이 오답·모르겠음을 우선하는 오늘의 8문제 선정 기준이 정상입니다.');
