@@ -14,8 +14,15 @@
     'validation',
   ]);
 
-  const isWeakAttempt = (attempt) =>
-    Boolean(attempt) && (attempt.status !== 'correct' || attempt.confidence === 'uncertain');
+  function weaknessScore(attempt) {
+    if (!attempt) return 0;
+    if (attempt.status === 'unknown') return 4;
+    if (attempt.status === 'wrong') return 3;
+    if (attempt.status === 'correct' && attempt.confidence === 'uncertain') return 1;
+    return 0;
+  }
+
+  const isWeakAttempt = (attempt) => weaknessScore(attempt) > 0;
 
   function latestAttemptMap(attempts) {
     const latest = new Map();
@@ -43,11 +50,17 @@
       const item = stats.get(question.conceptId) || {
         seen: 0,
         weak: 0,
+        weakSeverity: 0,
         confidentCorrect: 0,
       };
+      const severity = weaknessScore(attempt);
       item.seen += 1;
-      if (isWeakAttempt(attempt)) item.weak += 1;
-      else item.confidentCorrect += 1;
+      if (severity > 0) {
+        item.weak += 1;
+        item.weakSeverity += severity;
+      } else {
+        item.confidentCorrect += 1;
+      }
       stats.set(question.conceptId, item);
     }
 
@@ -62,19 +75,21 @@
 
   function candidateScore(question, latest, conceptStats, seed) {
     const attempt = latest.get(question.id);
+    const attemptSeverity = weaknessScore(attempt);
     const concept = conceptStats.get(question.conceptId) || {
       seen: 0,
       weak: 0,
+      weakSeverity: 0,
       confidentCorrect: 0,
     };
     const mastered = concept.seen > 0 && concept.weak === 0 && concept.confidentCorrect > 0;
 
     let score = 0;
 
-    if (isWeakAttempt(attempt)) {
-      score += 1400;
+    if (attemptSeverity > 0) {
+      score += 1200 + attemptSeverity * 120;
     } else if (!attempt && concept.weak > 0) {
-      score += 1120;
+      score += 940 + Math.min(concept.weakSeverity, 12) * 45;
     } else if (!attempt && concept.seen === 0) {
       score += 820;
     } else if (!attempt) {
@@ -83,7 +98,9 @@
       score += 80;
     }
 
-    score += Math.min(concept.weak, 4) * 90;
+    score += Math.min(concept.weak, 4) * 110;
+    score += Math.min(concept.weakSeverity, 12) * 30;
+    if (concept.weak >= 2) score += 180;
     score += bankWeight(question);
 
     if (BIGDATA_SPECIFIC_CONCEPTS.has(question.conceptId)) {
@@ -92,7 +109,7 @@
     }
 
     if (mastered) score -= 480;
-    if (attempt && !isWeakAttempt(attempt)) score -= 650;
+    if (attempt && attemptSeverity === 0) score -= 650;
 
     return score + stableNoise(seed, question.id);
   }
@@ -160,6 +177,7 @@
 
   root.DAILY_SELECTION = {
     BIGDATA_SPECIFIC_CONCEPTS,
+    weaknessScore,
     isWeakAttempt,
     selectDailyQuestionIds,
     describeDailySet,
