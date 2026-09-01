@@ -43,6 +43,21 @@ const assert = (condition, message) => {
   if (!condition) throw new Error(message);
 };
 
+assert(
+  daily.weaknessScore({ status: 'unknown', confidence: 'unknown' }) >
+    daily.weaknessScore({ status: 'wrong', confidence: 'unmarked' }),
+  '모르겠음이 오답보다 높은 재학습 우선순위를 가져야 합니다.'
+);
+assert(
+  daily.weaknessScore({ status: 'wrong', confidence: 'unmarked' }) >
+    daily.weaknessScore({ status: 'correct', confidence: 'uncertain' }),
+  '오답이 확신 없는 정답보다 높은 재학습 우선순위를 가져야 합니다.'
+);
+assert(
+  daily.weaknessScore({ status: 'correct', confidence: 'unmarked' }) === 0,
+  '확신 문제가 없는 정답은 취약 응답으로 계산하면 안 됩니다.'
+);
+
 const seed = '2026-08-31';
 const first = daily.selectDailyQuestionIds({
   questions: data.QUESTIONS,
