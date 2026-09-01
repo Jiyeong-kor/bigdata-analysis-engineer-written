@@ -31,6 +31,7 @@ jobs:
           node --check app-study.js
           node --check app-v2.js
           node --check app-v2-events.js
+          node --check quiz-simplification.js
           node --check answer-selection-fix.js
           node --check instant-choice-grading-ui.js
           node --check concept-link-fix.js
