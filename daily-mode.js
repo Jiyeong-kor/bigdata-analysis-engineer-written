@@ -1,5 +1,5 @@
 (() => {
-  const DAILY_CRITERIA_VERSION = 1;
+  const DAILY_CRITERIA_VERSION = 2;
 
   function seoulDateKey() {
     return new Intl.DateTimeFormat('en-CA', {
@@ -71,18 +71,19 @@
     const info = existingDailyInfo();
     const section = document.createElement('section');
     section.className = 'compact-section';
+    const focusCopy = info?.profilePriority ? ` · 집중 복습 ${info.profilePriority}개` : '';
     section.innerHTML = `
       <div class="section-head">
         <div>
           <h2>오늘의 8문제</h2>
-          <p class="section-caption">네 과목을 고르게 풀면서 취약한 부분부터 확인합니다.</p>
+          <p class="section-caption">최근 학습 상태와 앱 풀이 기록을 함께 보고 취약한 부분부터 확인합니다.</p>
         </div>
       </div>
       <div class="daily-card-v2">
         <div class="daily-card-main">
           <strong>과목별 2문제</strong>
           <p>${info
-            ? `처음 푸는 문제 ${info.unseen}개 · 다시 볼 문제 ${info.weak}개`
+            ? `처음 푸는 문제 ${info.unseen}개 · 다시 볼 문제 ${info.weak}개${focusCopy}`
             : '오늘 풀 문제를 바로 시작합니다.'}</p>
         </div>
         <button class="primary-button" data-action="start-daily">풀기</button>

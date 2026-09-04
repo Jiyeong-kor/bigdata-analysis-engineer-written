@@ -39,6 +39,7 @@ jobs:
           node --check daily-mode.js
           node --check daily-selection.js
           node --check data-finalize.js
+          node --check notion-learning-profile.js
           node --check data-subject-1.js
           node --check data-subject-2.js
           node --check data-subject-3.js
@@ -50,7 +51,7 @@ jobs:
           node --check source-sync-patches.js
           node --check sw.js
 
-      - name: 215문항·개념 데이터 검사
+      - name: 220문항·개념 데이터 검사
         run: node validate-data.mjs
 
       - name: 매일 8문제 선정 기준 검사

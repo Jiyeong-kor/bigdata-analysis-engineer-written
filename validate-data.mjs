@@ -20,6 +20,7 @@ for (const file of [
   'data-bank-subject-3.js',
   'data-bank-subject-4.js',
   'data-finalize.js',
+  'notion-learning-profile.js',
 ]) {
   vm.runInContext(fs.readFileSync(file, 'utf8'), context, { filename: file });
 }
@@ -36,15 +37,15 @@ const assert = (condition, message) => {
 };
 
 const expectedSubjectCounts = new Map([
-  [1, 51],
+  [1, 56],
   [2, 48],
   [3, 57],
   [4, 59],
 ]);
 const bankOf = (question) => question.bank || 'past';
 
-assert(data.QUESTIONS.length === 215, `문항 수가 215개가 아닙니다: ${data.QUESTIONS.length}`);
-assert(new Set(data.QUESTIONS.map((question) => question.id)).size === 215, '문항 ID가 중복되었습니다.');
+assert(data.QUESTIONS.length === 220, `문항 수가 220개가 아닙니다: ${data.QUESTIONS.length}`);
+assert(new Set(data.QUESTIONS.map((question) => question.id)).size === 220, '문항 ID가 중복되었습니다.');
 
 for (const [subject, expected] of expectedSubjectCounts.entries()) {
   const count = data.QUESTIONS.filter((question) => question.subject === subject).length;
@@ -54,7 +55,7 @@ for (const [subject, expected] of expectedSubjectCounts.entries()) {
 const expectedBankCounts = new Map([
   ['past', 80],
   ['diagnostic', 40],
-  ['practice', 95],
+  ['practice', 100],
 ]);
 for (const [bank, expected] of expectedBankCounts.entries()) {
   const count = data.QUESTIONS.filter((question) => bankOf(question) === bank).length;
@@ -79,8 +80,8 @@ const diagnosticIds = data.QUESTIONS.filter((question) => bankOf(question) === '
 assert(diagnosticIds[0] === 101 && diagnosticIds.at(-1) === 140, '자가진단 ID 범위가 101~140이 아닙니다.');
 
 const practiceIds = data.QUESTIONS.filter((question) => bankOf(question) === 'practice').map((question) => question.id).sort((a, b) => a - b);
-assert(practiceIds[0] === 201 && practiceIds.at(-1) === 295, '교재 변형문제 ID 범위가 201~295가 아닙니다.');
-assert(practiceIds.every((id, index) => id === 201 + index), '교재 변형문제 ID 201~295 사이에 누락이 있습니다.');
+assert(practiceIds[0] === 201 && practiceIds.at(-1) === 300, '교재·노션 변형문제 ID 범위가 201~300이 아닙니다.');
+assert(practiceIds.every((id, index) => id === 201 + index), '교재·노션 변형문제 ID 201~300 사이에 누락이 있습니다.');
 
 const q33 = data.QUESTIONS.find((question) => question.id === 33);
 assert(q33.choices.join('|') === '25/12|35/12|35/6|49/12', '33번 보강 선택지가 반영되지 않았습니다.');
@@ -97,8 +98,16 @@ assert(q31.answer === 1 && q31.stem.includes('대응표본'), '31번 최신 Noti
 const q101 = data.QUESTIONS.find((question) => question.id === 101);
 const q140 = data.QUESTIONS.find((question) => question.id === 140);
 const q201 = data.QUESTIONS.find((question) => question.id === 201);
-const q295 = data.QUESTIONS.find((question) => question.id === 295);
+const q300 = data.QUESTIONS.find((question) => question.id === 300);
 assert(q101?.bank === 'diagnostic' && q140?.bank === 'diagnostic', '자가진단 문제은행 연결이 잘못되었습니다.');
-assert(q201?.bank === 'practice' && q295?.bank === 'practice', '교재 변형 문제은행 연결이 잘못되었습니다.');
+assert(q201?.bank === 'practice' && q300?.bank === 'practice', '교재·노션 변형 문제은행 연결이 잘못되었습니다.');
 
-console.log('검증 완료: 4과목 215문항, 기출 80·자가진단 40·교재 변형 95, 선택지·정답·개념 연결이 정상입니다.');
+const notionProfile = context.window.NOTION_LEARNING_PROFILE;
+assert(notionProfile?.updatedAt === '2026-09-04', '최신 Notion 학습 프로필 날짜가 반영되지 않았습니다.');
+for (const id of [296, 297, 298, 299]) {
+  const question = data.QUESTIONS.find((item) => item.id === id);
+  assert(question?.conceptId === 'nosql-products', `${id}번 NoSQL 제품 구분 보강문제가 없습니다.`);
+}
+assert(data.QUESTIONS.find((question) => question.id === 300)?.conceptId === 'web-collection', '300번 Chukwa 보강문제가 없습니다.');
+
+console.log('검증 완료: 4과목 220문항, 기출 80·자가진단 40·교재/노션 변형 100, 최신 학습 프로필·선택지·정답·개념 연결이 정상입니다.');

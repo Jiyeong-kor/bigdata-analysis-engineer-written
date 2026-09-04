@@ -1,6 +1,7 @@
 ((root) => {
   const BIGDATA_SPECIFIC_CONCEPTS = new Set([
     'platform',
+    'nosql-products',
     'web-collection',
     'ai-governance',
     'storage-architecture',
@@ -72,6 +73,20 @@
     return 10;
   }
 
+  function profilePriorityScore(question) {
+    const profile = root.NOTION_LEARNING_PROFILE;
+    if (!profile) return 0;
+    const conceptScore = Number(profile.conceptPriority?.[question.conceptId] || 0);
+    const questionScore = Number(profile.questionPriority?.[question.id] || 0);
+    return conceptScore + questionScore;
+  }
+
+  function adjustedProfileScore(question, concept) {
+    const score = profilePriorityScore(question);
+    if (score <= 0 || concept.weak > 0 || concept.correct === 0) return score;
+    return Math.max(0, score - concept.correct * 220);
+  }
+
   function candidateScore(question, latest, conceptStats, seed) {
     const attempt = latest.get(question.id);
     const attemptSeverity = weaknessScore(attempt);
@@ -101,6 +116,7 @@
     score += Math.min(concept.weakSeverity, 12) * 30;
     if (concept.weak >= 2) score += 180;
     score += bankWeight(question);
+    score += adjustedProfileScore(question, concept);
 
     if (BIGDATA_SPECIFIC_CONCEPTS.has(question.conceptId)) {
       score += 190;
@@ -168,6 +184,8 @@
       weak: selected.filter((question) => isWeakAttempt(latest.get(question.id))).length,
       unseen: selected.filter((question) => !latest.has(question.id)).length,
       bigdataSpecific: selected.filter((question) => BIGDATA_SPECIFIC_CONCEPTS.has(question.conceptId)).length,
+      profilePriority: selected.filter((question) => profilePriorityScore(question) > 0).length,
+      profileDate: root.NOTION_LEARNING_PROFILE?.updatedAt || null,
       subjects: [1, 2, 3, 4].map((subject) =>
         selected.filter((question) => question.subject === subject).length
       ),
@@ -178,6 +196,7 @@
     BIGDATA_SPECIFIC_CONCEPTS,
     weaknessScore,
     isWeakAttempt,
+    profilePriorityScore,
     selectDailyQuestionIds,
     describeDailySet,
   };

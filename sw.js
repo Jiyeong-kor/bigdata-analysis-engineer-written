@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bigdata-study-v12';
+const CACHE_NAME = 'bigdata-study-v13';
 const APP_SHELL = [
   './',
   './index.html',
@@ -15,6 +15,7 @@ const APP_SHELL = [
   './data-bank-subject-3.js',
   './data-bank-subject-4.js',
   './data-finalize.js',
+  './notion-learning-profile.js',
   './daily-selection.js',
   './app-core.js',
   './app-home.js',
