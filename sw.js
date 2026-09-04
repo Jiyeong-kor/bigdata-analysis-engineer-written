@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bigdata-study-v15';
+const CACHE_NAME = 'bigdata-study-v16';
 const APP_SHELL = [
   './',
   './index.html',
@@ -16,6 +16,7 @@ const APP_SHELL = [
   './data-bank-subject-4.js',
   './data-finalize.js',
   './notion-learning-profile.js',
+  './chat-review-12th.js',
   './daily-selection.js',
   './app-core.js',
   './app-home.js',
@@ -23,6 +24,7 @@ const APP_SHELL = [
   './hypothesis-pvalue-patch.js',
   './app-study.js',
   './app-v2.js',
+  './chat-review-ui.js',
   './quiz-simplification.js',
   './answer-selection-fix.js',
   './instant-choice-grading-ui.js',
