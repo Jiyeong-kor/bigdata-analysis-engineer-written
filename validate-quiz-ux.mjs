@@ -10,6 +10,8 @@ const simplification = read('./quiz-simplification.js');
 const conceptLinkFix = read('./concept-link-fix.js');
 const pValuePatch = read('./hypothesis-pvalue-patch.js');
 const appUpdate = read('./app-update.js');
+const chatReview = read('./chat-review-12th.js');
+const chatReviewUi = read('./chat-review-ui.js');
 const layout = read('./iphone-quiz-layout.css');
 const serviceWorker = read('./sw.js');
 const subject4Bank = read('./data-bank-subject-4.js');
@@ -74,6 +76,21 @@ assert.ok(
 );
 
 assert.ok(
+  chatReview.includes("bank: 'chat-review'") &&
+    chatReview.includes("source: '12회 채팅 복습'") &&
+    chatReview.includes('id: 305') &&
+    chatReview.includes('id: 318'),
+  '12회 채팅 복습 14문항 데이터가 없습니다.'
+);
+
+assert.ok(
+  chatReviewUi.includes("const BANK_ID = 'chat-review';") &&
+    chatReviewUi.includes('12회 채팅 복습 14문항') &&
+    chatReviewUi.includes('bankList.prepend(button)'),
+  '12회 채팅 복습 문제 묶음을 홈 화면에 표시하는 처리가 없습니다.'
+);
+
+assert.ok(
   layout.includes('#app') &&
     layout.includes('padding-top: 0') &&
     layout.includes('.app-shell > .topbar + .page'),
@@ -81,7 +98,7 @@ assert.ok(
 );
 
 assert.ok(
-  appUpdate.includes("const APP_VERSION = 'v15';") &&
+  appUpdate.includes("const APP_VERSION = 'v16';") &&
     appUpdate.includes('data-action="app-update"') &&
     appUpdate.includes('registration.update()') &&
     appUpdate.includes("window.location.reload()") &&
@@ -92,31 +109,37 @@ assert.ok(
 assert.ok(
   index.includes('./iphone-quiz-layout.css') &&
     index.includes('./notion-learning-profile.js') &&
+    index.includes('./chat-review-12th.js') &&
+    index.includes('./chat-review-ui.js') &&
     index.includes('./hypothesis-pvalue-patch.js') &&
     index.includes('./quiz-simplification.js') &&
     index.includes('./concept-link-fix.js') &&
     index.includes('./app-update.js') &&
     index.indexOf('./data-finalize.js') < index.indexOf('./notion-learning-profile.js') &&
-    index.indexOf('./notion-learning-profile.js') < index.indexOf('./daily-selection.js') &&
-    index.indexOf('./app-v2.js') < index.indexOf('./quiz-simplification.js') &&
+    index.indexOf('./notion-learning-profile.js') < index.indexOf('./chat-review-12th.js') &&
+    index.indexOf('./chat-review-12th.js') < index.indexOf('./daily-selection.js') &&
+    index.indexOf('./app-v2.js') < index.indexOf('./chat-review-ui.js') &&
+    index.indexOf('./chat-review-ui.js') < index.indexOf('./quiz-simplification.js') &&
     index.indexOf('./quiz-simplification.js') < index.indexOf('./instant-choice-grading-ui.js') &&
     index.indexOf('./instant-choice-grading-ui.js') < index.indexOf('./concept-link-fix.js') &&
     index.indexOf('./concept-link-fix.js') < index.indexOf('./app-update.js') &&
     index.indexOf('./app-update.js') < index.indexOf('./app-events.js'),
-  '문제풀이 단순화, Notion 학습 프로필, 화면 보정, 개념 연결 또는 업데이트 파일의 로딩 순서가 올바르지 않습니다.'
+  '12회 채팅 복습, 문제풀이 단순화, 학습 프로필, 화면 보정, 개념 연결 또는 업데이트 파일의 로딩 순서가 올바르지 않습니다.'
 );
 
 assert.ok(
-  serviceWorker.includes("bigdata-study-v15") &&
+  serviceWorker.includes("bigdata-study-v16") &&
     serviceWorker.includes('./iphone-quiz-layout.css') &&
     serviceWorker.includes('./notion-learning-profile.js') &&
+    serviceWorker.includes('./chat-review-12th.js') &&
+    serviceWorker.includes('./chat-review-ui.js') &&
     serviceWorker.includes('./hypothesis-pvalue-patch.js') &&
     serviceWorker.includes('./quiz-simplification.js') &&
     serviceWorker.includes('./instant-choice-grading-ui.js') &&
     serviceWorker.includes('./concept-link-fix.js') &&
     serviceWorker.includes('./app-update.js') &&
     serviceWorker.includes("event.data?.type === 'SKIP_WAITING'"),
-  'PWA 캐시에 최신 학습 프로필·문제풀이·화면·개념·업데이트 파일이 포함되지 않았습니다.'
+  'PWA 캐시에 12회 채팅 복습·최신 학습 프로필·문제풀이·화면·개념·업데이트 파일이 포함되지 않았습니다.'
 );
 
-console.log('즉시 채점, 다음 버튼 이동, 불필요한 풀이 메타 제거, p값 개념, 최신 기록 우선 학습 프로필, 현재 문항 개념 연결, iPhone 화면 배치, 앱 내부 업데이트 검사를 통과했습니다.');
+console.log('12회 채팅 복습 14문항, 즉시 채점, 다음 버튼 이동, 최신 학습 프로필, iPhone 화면 배치, v16 앱 업데이트 검사를 통과했습니다.');
