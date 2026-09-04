@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bigdata-study-v14';
+const CACHE_NAME = 'bigdata-study-v15';
 const APP_SHELL = [
   './',
   './index.html',
