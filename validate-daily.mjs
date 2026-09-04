@@ -23,12 +23,14 @@ for (const file of [
   'data-bank-subject-4.js',
   'data-finalize.js',
   'notion-learning-profile.js',
+  'chat-review-12th.js',
 ]) {
   vm.runInContext(fs.readFileSync(file, 'utf8'), context, { filename: file });
 }
 
 const data = context.window.STUDY_DATA;
 if (!data) throw new Error('STUDY_DATA가 생성되지 않았습니다.');
+if (data.QUESTIONS.length !== 238) throw new Error(`채팅 복습 반영 후 문항 수가 238개가 아닙니다: ${data.QUESTIONS.length}`);
 context.DATA = data;
 vm.runInContext(fs.readFileSync('source-sync-patches.js', 'utf8'), context, {
   filename: 'source-sync-patches.js',
@@ -173,4 +175,4 @@ for (const forbiddenCopy of [
   assert(!dailyModeSource.includes(forbiddenCopy), `사용자 화면에 내부 구현 문구가 남아 있습니다: ${forbiddenCopy}`);
 }
 
-console.log('검증 완료: 최신 학습 프로필과 이후 앱 기록을 시각으로 비교하고, 반복 취약점은 같은 문항 대신 변형문제로 우선 재시험합니다.');
+console.log('검증 완료: 12회 채팅 복습을 포함한 238문항에서도 최신 학습 프로필과 이후 앱 기록을 비교하고 기존 적응형 선정 규칙을 유지합니다.');
