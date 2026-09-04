@@ -38,14 +38,14 @@ const assert = (condition, message) => {
 
 const expectedSubjectCounts = new Map([
   [1, 56],
-  [2, 48],
+  [2, 52],
   [3, 57],
   [4, 59],
 ]);
 const bankOf = (question) => question.bank || 'past';
 
-assert(data.QUESTIONS.length === 220, `문항 수가 220개가 아닙니다: ${data.QUESTIONS.length}`);
-assert(new Set(data.QUESTIONS.map((question) => question.id)).size === 220, '문항 ID가 중복되었습니다.');
+assert(data.QUESTIONS.length === 224, `문항 수가 224개가 아닙니다: ${data.QUESTIONS.length}`);
+assert(new Set(data.QUESTIONS.map((question) => question.id)).size === 224, '문항 ID가 중복되었습니다.');
 
 for (const [subject, expected] of expectedSubjectCounts.entries()) {
   const count = data.QUESTIONS.filter((question) => question.subject === subject).length;
@@ -55,7 +55,7 @@ for (const [subject, expected] of expectedSubjectCounts.entries()) {
 const expectedBankCounts = new Map([
   ['past', 80],
   ['diagnostic', 40],
-  ['practice', 100],
+  ['practice', 104],
 ]);
 for (const [bank, expected] of expectedBankCounts.entries()) {
   const count = data.QUESTIONS.filter((question) => bankOf(question) === bank).length;
@@ -80,8 +80,8 @@ const diagnosticIds = data.QUESTIONS.filter((question) => bankOf(question) === '
 assert(diagnosticIds[0] === 101 && diagnosticIds.at(-1) === 140, '자가진단 ID 범위가 101~140이 아닙니다.');
 
 const practiceIds = data.QUESTIONS.filter((question) => bankOf(question) === 'practice').map((question) => question.id).sort((a, b) => a - b);
-assert(practiceIds[0] === 201 && practiceIds.at(-1) === 300, '교재·노션 변형문제 ID 범위가 201~300이 아닙니다.');
-assert(practiceIds.every((id, index) => id === 201 + index), '교재·노션 변형문제 ID 201~300 사이에 누락이 있습니다.');
+assert(practiceIds[0] === 201 && practiceIds.at(-1) === 304, '교재·노션 변형문제 ID 범위가 201~304가 아닙니다.');
+assert(practiceIds.every((id, index) => id === 201 + index), '교재·노션 변형문제 ID 201~304 사이에 누락이 있습니다.');
 
 const q33 = data.QUESTIONS.find((question) => question.id === 33);
 assert(q33.choices.join('|') === '25/12|35/12|35/6|49/12', '33번 보강 선택지가 반영되지 않았습니다.');
@@ -98,17 +98,26 @@ assert(q31.answer === 1 && q31.stem.includes('대응표본'), '31번 최신 Noti
 const q101 = data.QUESTIONS.find((question) => question.id === 101);
 const q140 = data.QUESTIONS.find((question) => question.id === 140);
 const q201 = data.QUESTIONS.find((question) => question.id === 201);
-const q300 = data.QUESTIONS.find((question) => question.id === 300);
+const q304 = data.QUESTIONS.find((question) => question.id === 304);
 assert(q101?.bank === 'diagnostic' && q140?.bank === 'diagnostic', '자가진단 문제은행 연결이 잘못되었습니다.');
-assert(q201?.bank === 'practice' && q300?.bank === 'practice', '교재·노션 변형 문제은행 연결이 잘못되었습니다.');
+assert(q201?.bank === 'practice' && q304?.bank === 'practice', '교재·노션 변형 문제은행 연결이 잘못되었습니다.');
 
 const notionProfile = context.window.NOTION_LEARNING_PROFILE;
-assert(notionProfile?.updatedAt === '2026-09-04T10:19:00.000Z', 'Notion 학습 프로필의 정확한 스냅샷 시각이 반영되지 않았습니다.');
-assert(Date.parse(notionProfile.updatedAt) > 0, 'Notion 학습 프로필 시각을 파싱할 수 없습니다.');
+assert(notionProfile?.version === 3, '최신 적응형 학습 프로필 버전이 반영되지 않았습니다.');
+assert(notionProfile?.updatedAt === '2026-09-04T12:31:52.274Z', '최신 앱 학습기록의 정확한 스냅샷 시각이 반영되지 않았습니다.');
+assert(Date.parse(notionProfile.updatedAt) > 0, '학습 프로필 시각을 파싱할 수 없습니다.');
 for (const id of [296, 297, 298, 299]) {
   const question = data.QUESTIONS.find((item) => item.id === id);
   assert(question?.conceptId === 'nosql-products', `${id}번 NoSQL 제품 구분 보강문제가 없습니다.`);
 }
 assert(data.QUESTIONS.find((question) => question.id === 300)?.conceptId === 'web-collection', '300번 Chukwa 보강문제가 없습니다.');
+for (const id of [301, 302, 303, 304]) {
+  const question = data.QUESTIONS.find((item) => item.id === id);
+  assert(question?.conceptId === 'hypothesis', `${id}번 비모수 검정 보강문제가 없습니다.`);
+}
+assert(data.QUESTIONS.find((question) => question.id === 301)?.answer === 1, '301번 Kruskal-Wallis 정답 연결이 잘못되었습니다.');
+assert(data.QUESTIONS.find((question) => question.id === 302)?.answer === 0, '302번 Friedman 정답 연결이 잘못되었습니다.');
+assert(data.QUESTIONS.find((question) => question.id === 303)?.answer === 0, '303번 Mann-Whitney U 정답 연결이 잘못되었습니다.');
+assert(data.QUESTIONS.find((question) => question.id === 304)?.answer === 3, '304번 McNemar 정답 연결이 잘못되었습니다.');
 
-console.log('검증 완료: 4과목 220문항, 기출 80·자가진단 40·교재/노션 변형 100, 정확한 Notion 스냅샷 시각·선택지·정답·개념 연결이 정상입니다.');
+console.log('검증 완료: 4과목 224문항, 기출 80·자가진단 40·교재/노션 변형 104, 최신 학습 스냅샷·비모수 검정 보강·선택지·정답·개념 연결이 정상입니다.');
