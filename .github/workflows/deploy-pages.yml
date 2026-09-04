@@ -51,7 +51,7 @@ jobs:
           node --check source-sync-patches.js
           node --check sw.js
 
-      - name: 220문항·개념 데이터 검사
+      - name: 224문항·개념 데이터 검사
         run: node validate-data.mjs
 
       - name: 매일 8문제 선정 기준 검사
