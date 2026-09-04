@@ -31,6 +31,8 @@ jobs:
           node --check app-study.js
           node --check app-v2.js
           node --check app-v2-events.js
+          node --check chat-review-12th.js
+          node --check chat-review-ui.js
           node --check quiz-simplification.js
           node --check answer-selection-fix.js
           node --check instant-choice-grading-ui.js
@@ -51,7 +53,7 @@ jobs:
           node --check source-sync-patches.js
           node --check sw.js
 
-      - name: 224문항·개념 데이터 검사
+      - name: 238문항·개념 데이터 검사
         run: node validate-data.mjs
 
       - name: 매일 8문제 선정 기준 검사
