@@ -81,7 +81,7 @@ assert.ok(
 );
 
 assert.ok(
-  appUpdate.includes("const APP_VERSION = 'v14';") &&
+  appUpdate.includes("const APP_VERSION = 'v15';") &&
     appUpdate.includes('data-action="app-update"') &&
     appUpdate.includes('registration.update()') &&
     appUpdate.includes("window.location.reload()") &&
@@ -107,7 +107,7 @@ assert.ok(
 );
 
 assert.ok(
-  serviceWorker.includes("bigdata-study-v14") &&
+  serviceWorker.includes("bigdata-study-v15") &&
     serviceWorker.includes('./iphone-quiz-layout.css') &&
     serviceWorker.includes('./notion-learning-profile.js') &&
     serviceWorker.includes('./hypothesis-pvalue-patch.js') &&
