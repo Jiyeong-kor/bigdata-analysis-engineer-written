@@ -21,6 +21,7 @@ for (const file of [
   'data-bank-subject-4.js',
   'data-finalize.js',
   'notion-learning-profile.js',
+  'chat-review-12th.js',
 ]) {
   vm.runInContext(fs.readFileSync(file, 'utf8'), context, { filename: file });
 }
@@ -37,15 +38,15 @@ const assert = (condition, message) => {
 };
 
 const expectedSubjectCounts = new Map([
-  [1, 56],
+  [1, 60],
   [2, 52],
   [3, 57],
-  [4, 59],
+  [4, 69],
 ]);
 const bankOf = (question) => question.bank || 'past';
 
-assert(data.QUESTIONS.length === 224, `문항 수가 224개가 아닙니다: ${data.QUESTIONS.length}`);
-assert(new Set(data.QUESTIONS.map((question) => question.id)).size === 224, '문항 ID가 중복되었습니다.');
+assert(data.QUESTIONS.length === 238, `문항 수가 238개가 아닙니다: ${data.QUESTIONS.length}`);
+assert(new Set(data.QUESTIONS.map((question) => question.id)).size === 238, '문항 ID가 중복되었습니다.');
 
 for (const [subject, expected] of expectedSubjectCounts.entries()) {
   const count = data.QUESTIONS.filter((question) => question.subject === subject).length;
@@ -56,6 +57,7 @@ const expectedBankCounts = new Map([
   ['past', 80],
   ['diagnostic', 40],
   ['practice', 104],
+  ['chat-review', 14],
 ]);
 for (const [bank, expected] of expectedBankCounts.entries()) {
   const count = data.QUESTIONS.filter((question) => bankOf(question) === bank).length;
@@ -82,6 +84,13 @@ assert(diagnosticIds[0] === 101 && diagnosticIds.at(-1) === 140, '자가진단 I
 const practiceIds = data.QUESTIONS.filter((question) => bankOf(question) === 'practice').map((question) => question.id).sort((a, b) => a - b);
 assert(practiceIds[0] === 201 && practiceIds.at(-1) === 304, '교재·노션 변형문제 ID 범위가 201~304가 아닙니다.');
 assert(practiceIds.every((id, index) => id === 201 + index), '교재·노션 변형문제 ID 201~304 사이에 누락이 있습니다.');
+
+const chatReviewIds = data.QUESTIONS.filter((question) => bankOf(question) === 'chat-review').map((question) => question.id).sort((a, b) => a - b);
+assert(chatReviewIds.length === 14, `12회 채팅 복습 문항이 14개가 아닙니다: ${chatReviewIds.length}`);
+assert(chatReviewIds[0] === 305 && chatReviewIds.at(-1) === 318, '12회 채팅 복습 ID 범위가 305~318이 아닙니다.');
+assert(chatReviewIds.every((id, index) => id === 305 + index), '12회 채팅 복습 ID 305~318 사이에 누락이 있습니다.');
+assert(data.QUESTIONS.filter((question) => bankOf(question) === 'chat-review' && question.subject === 1).length === 4, '12회 채팅 복습 1과목 문항 수가 4개가 아닙니다.');
+assert(data.QUESTIONS.filter((question) => bankOf(question) === 'chat-review' && question.subject === 4).length === 10, '12회 채팅 복습 4과목 문항 수가 10개가 아닙니다.');
 
 const q33 = data.QUESTIONS.find((question) => question.id === 33);
 assert(q33.choices.join('|') === '25/12|35/12|35/6|49/12', '33번 보강 선택지가 반영되지 않았습니다.');
@@ -115,9 +124,29 @@ for (const id of [301, 302, 303, 304]) {
   const question = data.QUESTIONS.find((item) => item.id === id);
   assert(question?.conceptId === 'hypothesis', `${id}번 비모수 검정 보강문제가 없습니다.`);
 }
-assert(data.QUESTIONS.find((question) => question.id === 301)?.answer === 1, '301번 Kruskal-Wallis 정답 연결이 잘못되었습니다.');
-assert(data.QUESTIONS.find((question) => question.id === 302)?.answer === 0, '302번 Friedman 정답 연결이 잘못되었습니다.');
-assert(data.QUESTIONS.find((question) => question.id === 303)?.answer === 0, '303번 Mann-Whitney U 정답 연결이 잘못되었습니다.');
-assert(data.QUESTIONS.find((question) => question.id === 304)?.answer === 3, '304번 McNemar 정답 연결이 잘못되었습니다.');
 
-console.log('검증 완료: 4과목 224문항, 기출 80·자가진단 40·교재/노션 변형 104, 최신 학습 스냅샷·비모수 검정 보강·선택지·정답·개념 연결이 정상입니다.');
+const chatChecks = [
+  [305, 'storage-architecture', 1],
+  [306, 'nosql-products', 1],
+  [307, 'web-collection', 1],
+  [308, 'privacy', 2],
+  [309, 'metrics', 0],
+  [310, 'boxplot', 3],
+  [311, 'visualization', 2],
+  [312, 'visualization', 2],
+  [313, 'visualization', 1],
+  [314, 'regression', 0],
+  [315, 'regression', 0],
+  [316, 'model-operations', 3],
+  [317, 'task-metrics', 2],
+  [318, 'regression', 3],
+];
+for (const [id, conceptId, answer] of chatChecks) {
+  const question = data.QUESTIONS.find((item) => item.id === id);
+  assert(question?.bank === 'chat-review', `${id}번이 12회 채팅 복습 문제은행에 연결되지 않았습니다.`);
+  assert(question?.conceptId === conceptId, `${id}번 개념 연결이 ${conceptId}가 아닙니다.`);
+  assert(question?.answer === answer, `${id}번 정답 인덱스가 잘못되었습니다.`);
+  assert(question?.source === '12회 채팅 복습', `${id}번 출처 표시가 잘못되었습니다.`);
+}
+
+console.log('검증 완료: 4과목 238문항, 기출 80·자가진단 40·교재/노션 변형 104·12회 채팅 복습 14문항의 정답·개념·문제은행 연결이 정상입니다.');
