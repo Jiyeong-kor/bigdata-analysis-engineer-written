@@ -103,11 +103,12 @@ assert(q101?.bank === 'diagnostic' && q140?.bank === 'diagnostic', '자가진단
 assert(q201?.bank === 'practice' && q300?.bank === 'practice', '교재·노션 변형 문제은행 연결이 잘못되었습니다.');
 
 const notionProfile = context.window.NOTION_LEARNING_PROFILE;
-assert(notionProfile?.updatedAt === '2026-09-04', '최신 Notion 학습 프로필 날짜가 반영되지 않았습니다.');
+assert(notionProfile?.updatedAt === '2026-09-04T10:19:00.000Z', 'Notion 학습 프로필의 정확한 스냅샷 시각이 반영되지 않았습니다.');
+assert(Date.parse(notionProfile.updatedAt) > 0, 'Notion 학습 프로필 시각을 파싱할 수 없습니다.');
 for (const id of [296, 297, 298, 299]) {
   const question = data.QUESTIONS.find((item) => item.id === id);
   assert(question?.conceptId === 'nosql-products', `${id}번 NoSQL 제품 구분 보강문제가 없습니다.`);
 }
 assert(data.QUESTIONS.find((question) => question.id === 300)?.conceptId === 'web-collection', '300번 Chukwa 보강문제가 없습니다.');
 
-console.log('검증 완료: 4과목 220문항, 기출 80·자가진단 40·교재/노션 변형 100, 최신 학습 프로필·선택지·정답·개념 연결이 정상입니다.');
+console.log('검증 완료: 4과목 220문항, 기출 80·자가진단 40·교재/노션 변형 100, 정확한 Notion 스냅샷 시각·선택지·정답·개념 연결이 정상입니다.');

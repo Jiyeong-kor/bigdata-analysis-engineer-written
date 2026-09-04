@@ -2,11 +2,12 @@
   const data = window.STUDY_DATA;
   if (!data) throw new Error('STUDY_DATA가 생성되기 전에 Notion 학습 프로필을 적용할 수 없습니다.');
 
-  const PROFILE_UPDATED_AT = '2026-09-04';
+  const PROFILE_UPDATED_AT = '2026-09-04T10:19:00.000Z';
 
   const profile = {
-    version: 1,
+    version: 2,
     updatedAt: PROFILE_UPDATED_AT,
+    source: 'Notion 기출 2~10회 학습기록 스냅샷',
     conceptPriority: {
       'nosql-products': 520,
       hypothesis: 240,

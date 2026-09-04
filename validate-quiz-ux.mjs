@@ -81,7 +81,7 @@ assert.ok(
 );
 
 assert.ok(
-  appUpdate.includes("const APP_VERSION = 'v13';") &&
+  appUpdate.includes("const APP_VERSION = 'v14';") &&
     appUpdate.includes('data-action="app-update"') &&
     appUpdate.includes('registration.update()') &&
     appUpdate.includes("window.location.reload()") &&
@@ -107,7 +107,7 @@ assert.ok(
 );
 
 assert.ok(
-  serviceWorker.includes("bigdata-study-v13") &&
+  serviceWorker.includes("bigdata-study-v14") &&
     serviceWorker.includes('./iphone-quiz-layout.css') &&
     serviceWorker.includes('./notion-learning-profile.js') &&
     serviceWorker.includes('./hypothesis-pvalue-patch.js') &&
@@ -119,4 +119,4 @@ assert.ok(
   'PWA 캐시에 최신 학습 프로필·문제풀이·화면·개념·업데이트 파일이 포함되지 않았습니다.'
 );
 
-console.log('즉시 채점, 다음 버튼 이동, 불필요한 풀이 메타 제거, p값 개념, Notion 학습 프로필, 현재 문항 개념 연결, iPhone 화면 배치, 앱 내부 업데이트 검사를 통과했습니다.');
+console.log('즉시 채점, 다음 버튼 이동, 불필요한 풀이 메타 제거, p값 개념, 최신 기록 우선 학습 프로필, 현재 문항 개념 연결, iPhone 화면 배치, 앱 내부 업데이트 검사를 통과했습니다.');

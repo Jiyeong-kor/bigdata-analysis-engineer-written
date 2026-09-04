@@ -58,11 +58,47 @@ assert(
 );
 
 const nosqlQuestion = data.QUESTIONS.find((question) => question.id === 296);
-const masteredPlatformQuestion = data.QUESTIONS.find((question) => question.id === 203);
+const platformQuestion = data.QUESTIONS.find((question) => question.id === 203);
 assert(
-  daily.profilePriorityScore(nosqlQuestion) > daily.profilePriorityScore(masteredPlatformQuestion),
+  daily.profilePriorityScore(nosqlQuestion) > daily.profilePriorityScore(platformQuestion),
   'Notion의 미암기 NoSQL 제품 구분이 이해 완료 플랫폼 문항보다 높은 사전 우선순위를 가져야 합니다.'
 );
+
+const profileAt = context.window.NOTION_LEARNING_PROFILE.updatedAt;
+const olderAppAttempt = [{
+  questionId: 296,
+  conceptId: 'nosql-products',
+  status: 'correct',
+  answeredAt: '2026-09-04T10:00:00.000Z',
+}];
+const olderContext = daily.buildRecencyContext(data.QUESTIONS, olderAppAttempt);
+assert(daily.latestSourceForQuestion(nosqlQuestion, olderContext) === 'notion', 'Notion보다 오래된 앱 기록이 최신 상태로 선택되었습니다.');
+assert(daily.profilePriorityScore(nosqlQuestion, olderContext) > 0, '최신 Notion 취약 상태가 오래된 앱 정답 때문에 사라졌습니다.');
+assert(!olderContext.effectiveLatest.has(296), 'Notion보다 오래된 앱 기록이 유효한 현재 상태에 남아 있습니다.');
+
+const newerAppAttempt = [{
+  questionId: 296,
+  conceptId: 'nosql-products',
+  status: 'correct',
+  answeredAt: '2026-09-04T11:00:00.000Z',
+}];
+const newerContext = daily.buildRecencyContext(data.QUESTIONS, newerAppAttempt);
+assert(daily.latestSourceForQuestion(nosqlQuestion, newerContext) === 'app', 'Notion 이후의 앱 기록이 최신 상태로 선택되지 않았습니다.');
+assert(daily.profilePriorityScore(nosqlQuestion, newerContext) === 0, '더 최신 앱 기록 뒤에도 오래된 Notion 취약 가중치가 남아 있습니다.');
+assert(newerContext.effectiveLatest.get(296)?.status === 'correct', '더 최신 앱 정답이 유효한 현재 상태에 반영되지 않았습니다.');
+
+const newerAppWrong = [{
+  questionId: 203,
+  conceptId: platformQuestion.conceptId,
+  status: 'wrong',
+  answeredAt: '2026-09-04T11:30:00.000Z',
+}];
+const newerWrongContext = daily.buildRecencyContext(data.QUESTIONS, newerAppWrong);
+assert(daily.latestSourceForQuestion(platformQuestion, newerWrongContext) === 'app', 'Notion 이해 완료 이후의 앱 오답이 최신 상태로 선택되지 않았습니다.');
+assert(newerWrongContext.effectiveLatest.get(203)?.status === 'wrong', '최신 앱 오답이 유효 상태에 반영되지 않았습니다.');
+assert(daily.profilePriorityScore(platformQuestion, newerWrongContext) === 0, '최신 앱 오답 뒤에도 오래된 Notion 이해 완료 가중치가 남아 있습니다.');
+
+assert(Date.parse(profileAt) > 0, 'Notion 학습 프로필에 비교 가능한 정확한 갱신 시각이 없습니다.');
 
 const seed = '2026-09-04';
 const first = daily.selectDailyQuestionIds({
@@ -117,6 +153,7 @@ assert(weakInfo.subjects.every((count) => count === 2), '오답 반영 후 과�
 assert(weakInfo.weak >= 1, '오답·취약 문항 우선 원칙이 설명 정보에 반영되지 않았습니다.');
 
 const dailyModeSource = fs.readFileSync('daily-mode.js', 'utf8');
+assert(dailyModeSource.includes('더 최근에 갱신된 학습 상태'), '최신 기록 우선 원칙이 사용자 화면 설명에 반영되지 않았습니다.');
 for (const forbiddenCopy of [
   '매일학습 채팅',
   '출제 기준을 앱에 적용',
@@ -128,4 +165,4 @@ for (const forbiddenCopy of [
   assert(!dailyModeSource.includes(forbiddenCopy), `사용자 화면에 내부 구현 문구가 남아 있습니다: ${forbiddenCopy}`);
 }
 
-console.log('검증 완료: 앱 풀이 기록을 최우선으로 두면서 2026-09-04 Notion 이해도 사전 가중치를 반영하는 오늘의 8문제 선정 기준이 정상입니다.');
+console.log('검증 완료: 앱과 Notion 중 더 최근에 갱신된 학습 상태만 사용하며, 오래된 기록은 현재 출제 가중치에서 제외됩니다.');

@@ -1,5 +1,5 @@
 (() => {
-  const DAILY_CRITERIA_VERSION = 2;
+  const DAILY_CRITERIA_VERSION = 3;
 
   function seoulDateKey() {
     return new Intl.DateTimeFormat('en-CA', {
@@ -76,7 +76,7 @@
       <div class="section-head">
         <div>
           <h2>오늘의 8문제</h2>
-          <p class="section-caption">최근 학습 상태와 앱 풀이 기록을 함께 보고 취약한 부분부터 확인합니다.</p>
+          <p class="section-caption">앱 기록과 정리 기록 중 더 최근에 갱신된 학습 상태를 기준으로 출제합니다.</p>
         </div>
       </div>
       <div class="daily-card-v2">
